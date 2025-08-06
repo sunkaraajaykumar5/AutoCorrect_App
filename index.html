@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Autocorrect App</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+    html, body {
+      height: 100%; margin: 0; padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      font-family: 'Poppins', Arial, sans-serif;
+      color: #214585;
+      background: #08204b;
+      overflow: hidden;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .animated-bg {
+      position: fixed; inset: 0; width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .bubble-bg {
+      position: fixed;
+      z-index: 0;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      overflow: hidden; pointer-events: none;
+    }
+    .bubble {
+      position: absolute;
+      bottom: -120px;
+      background: radial-gradient(circle at 40% 36%, #b5e3ff 70%, #329fff 100%);
+      opacity: 0.28;
+      border-radius: 50%;
+      animation: float-bubble 14s linear infinite;
+    }
+    .bubble1 { left: 10vw; width: 55px; height: 55px; animation-delay: 0s; }
+    .bubble2 { left: 32vw; width: 38px; height: 38px; animation-delay: 3s; }
+    .bubble3 { left: 50vw; width: 65px; height: 65px; opacity: 0.22; animation-delay: 6s;}
+    .bubble4 { left: 67vw; width: 48px; height: 48px; opacity: 0.19; animation-delay: 2.5s;}
+    .bubble5 { left: 81vw; width: 30px; height: 30px; animation-delay: 9s;}
+    .bubble6 { left: 25vw; width: 90px; height: 90px; opacity: 0.14; animation-delay: 5s;}
+
+    @keyframes float-bubble {
+      0% { transform: translateY(0) scale(1);}
+      35% { opacity: 0.38;}
+      50% { transform: translateY(-50vh) scale(1.15);}
+      75% { opacity: 0.23;}
+      100% { transform: translateY(-102vh) scale(1);}
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 420px;
+      min-width: 320px;
+      background: rgba(245,250,254,0.97);
+      border-radius: 24px;
+      box-shadow: 0 18px 70px rgba(34,63,192,0.18), 0 2px 8px #3076ce21;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 38px 24px 38px 24px;
+      box-sizing: border-box;
+    }
+    h1 {
+      color: #2356c8;
+      font-weight: 700;
+      margin-bottom: 22px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      font-size: 2rem;
+    }
+    form {
+      width: 100%;
+    }
+    textarea {
+      width: 100%;
+      max-width: 100%;
+      min-width: 100%;
+      border-radius: 12px;
+      border: 2px solid #b4c0fd;
+      font-size: 1.13em;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      font-family: inherit;
+      box-shadow: 0 1px 8px rgba(70,60,200,0.06);
+      background: #f7faff;
+      color: #1e3357;
+      min-height: 92px;
+      resize: vertical;
+      transition: border 0.22s, box-shadow 0.22s;
+      box-sizing: border-box;
+      display: block;
+    }
+    textarea:focus {
+      border-color: #386bff;
+      outline: none;
+      box-shadow: 0 0 0 5px #aacdff33;
+    }
+    button {
+      display: block;
+      width: 100%;
+      background: linear-gradient(90deg,#2957df 67%,#42d7ff 100%);
+      color: #fff; border: none; border-radius: 9999px;
+      padding:14px 0; font-size:1.15em; font-weight:600;
+      cursor:pointer; transition: transform 0.13s, box-shadow 0.16s;
+      box-shadow: 0 2px 17px #23aaff2c;
+      letter-spacing: 0.4px;
+    }
+    button:active { transform:scale(.97);}
+    .result {
+      margin-top:24px;
+      background: #edf6ff;
+      border-radius: 13px;
+      min-height: 32px;
+      padding:18px 14px 21px;
+      color: #2545a0;
+      font-size:1.09em;
+      box-shadow: 0 4px 18px 0 #1e54c113;
+      overflow-x: auto;
+      position: relative;
+      animation: fadeCorrect 0.8s;
+    }
+    .correct-animate {
+      background: linear-gradient(90deg,#e0f3ff 50%,#dbf7ee 100%);
+      animation: highlight 1.2s cubic-bezier(.25,1.1,.35,1);
+    }
+    @keyframes highlight {
+      0%,100% { background: #e7f0ff; }
+      15% { background: #fffeca;}
+      50% { background: #c1f7ff;}
+    }
+    .checkmark {
+      display: inline-block; position: absolute; top: 13px; right: 13px;
+      width: 22px; height: 22px; vertical-align:middle; opacity:0.93;
+      animation: popCheck 0.7s cubic-bezier(.37,1.2,.44,1.18);
+    }
+    @keyframes popCheck {
+      from { transform: scale(0.6) rotate(-33deg); opacity:0;}
+      to { transform: scale(1) rotate(0); opacity:0.93;}
+    }
+    .checkmark svg path {
+      stroke-dasharray: 22;
+      stroke-dashoffset: 22;
+      animation: drawCheck 0.56s 0.10s forwards cubic-bezier(.62,1.19,.52,1.05);
+    }
+    @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+    @media (max-width:540px) {
+      .container { padding: 8vw 2vw; min-width: unset; }
+      h1 { font-size: 1.22rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- The animated gradient and bubbles background -->
+  <div class="animated-bg">
+    <div class="bubble-bg">
+      <div class="bubble bubble1"></div>
+      <div class="bubble bubble2"></div>
+      <div class="bubble bubble3"></div>
+      <div class="bubble bubble4"></div>
+      <div class="bubble bubble5"></div>
+      <div class="bubble bubble6"></div>
+    </div>
+  </div>
+  
+  <!-- Single App Card -->
+  <div class="container">
+    <h1>Autocorrect App</h1>
+    <form id="form" autocomplete="off">
+      <textarea name="text" id="autocorrect-text" placeholder="Type or paste your text..." required></textarea>
+      <button type="submit" id="autocorrect-btn">Autocorrect</button>
+    </form>
+    <div class="result" id="result" style="display:none;">
+      <span id="corrected-text"></span>
+      <span class="checkmark" style="display:none;">
+        <svg width="22" height="22"><path d="M4 12L9 18L18 5" stroke="#3447c3" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+      </span>
+    </div>
+  </div>
+  
+  <script>
+    function autocorrect(text) { return text.replace(/\bcorrrct\b|\bcorrct\b/gi, 'correct'); }
+    const form = document.getElementById('form');
+    const result = document.getElementById('result');
+    const correctedText = document.getElementById('corrected-text');
+    const checkmark = document.querySelector('.checkmark');
+    form.onsubmit = e => {
+      e.preventDefault();
+      let userText = document.getElementById('autocorrect-text').value;
+      let corrected = autocorrect(userText);
+
+      correctedText.innerText = corrected;
+      result.style.display = 'block';
+      correctedText.className = "correct-animate";
+      setTimeout(()=>{ correctedText.className = ""; }, 900);
+      checkmark.style.display="inline-block";
+      setTimeout(()=>{ checkmark.style.display="none"; }, 1400);
+    };
+  </script>
+</body>
+</html>
